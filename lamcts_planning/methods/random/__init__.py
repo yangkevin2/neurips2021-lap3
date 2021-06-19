@@ -1,0 +1,1 @@
+from .random import plan as plan

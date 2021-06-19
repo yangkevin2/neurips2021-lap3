@@ -1,0 +1,73 @@
+alabaster==0.7.12
+Babel==2.9.1
+certifi==2020.12.5
+cffi==1.14.5
+chardet==4.0.0
+chemprop==1.2.0
+click==7.1.2
+cloudpickle==1.6.0
+cma==3.0.3
+cycler==0.10.0
+Cython==0.29.22
+decorator==4.4.2
+descriptastorus @ git+https://github.com/bp-kelley/descriptastorus@4ffc9b888a78a9d01596987daebfae5653f1df7c
+docutils==0.16
+fasteners==0.16
+Flask==1.1.2
+future==0.18.2
+glfw==2.1.0
+gpytorch==1.4.0
+gym==0.18.0
+hyperopt==0.2.5
+idna==2.10
+imageio==2.9.0
+imagesize==1.2.0
+itsdangerous==1.1.0
+Jinja2==2.11.3
+joblib==1.0.1
+kiwisolver==1.3.1
+MarkupSafe==1.1.1
+matplotlib==3.3.4
+mkl-fft==1.3.0
+mkl-random==1.1.1
+mkl-service==2.3.0
+mujoco-py==2.0.2.13
+mypy-extensions==0.4.3
+networkx==2.5.1
+numpy==1.20.1
+olefile==0.46
+packaging==20.9
+pandas==1.2.4
+pandas-flavor==0.2.0
+Pillow @ file:///tmp/build/80754af9/pillow_1615057347459/work
+protobuf==3.16.0
+pycparser==2.20
+pyglet==1.5.11
+Pygments==2.9.0
+pyparsing==2.4.7
+python-dateutil @ file:///home/ktietz/src/ci/python-dateutil_1611928101742/work
+pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
+requests==2.25.1
+scikit-learn==0.24.2
+scipy==1.6.1
+six @ file:///tmp/build/80754af9/six_1605205313296/work
+snowballstemmer==2.1.0
+Sphinx==3.5.4
+sphinxcontrib-applehelp==1.0.2
+sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-htmlhelp==1.0.3
+sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-serializinghtml==1.1.4
+tensorboardX==2.2
+threadpoolctl==2.1.0
+torch==1.8.0
+torchaudio==0.8.0a0+a751e1d
+torchvision==0.9.0
+tqdm==4.59.0
+typed-argument-parser==1.6.2
+typing-extensions @ file:///home/ktietz/src/ci_mi/typing_extensions_1612808209620/work
+typing-inspect==0.6.0
+urllib3==1.26.4
+Werkzeug==1.0.1
+xarray==0.18.0

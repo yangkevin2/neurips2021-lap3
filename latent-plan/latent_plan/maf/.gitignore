@@ -1,0 +1,14 @@
+__pycache__
+.ipynb_checkpoints
+datasets/maf_data/*
+train_plots/*
+model_saves/*
+gif_results
+models
+results
+marginal.pdf
+marginal.png
+scatter_good.pdf
+scatter.pdf
+scatter.png
+gif.py
