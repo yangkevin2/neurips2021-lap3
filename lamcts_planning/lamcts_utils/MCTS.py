@@ -320,7 +320,7 @@ class MCTS:
                     self.latent_samples = [s[0] for s in self.samples]
                 self.dynamic_treeify()
             iterations_since_treeify += 1
-            leaf, path = self.no_tree_select() if self.args.no_tree_select else self.select()
+            leaf, path = self.select()
             for i in range(0, 1):
                 if self.solver_type == 'bo':
                     raise NotImplementedError
