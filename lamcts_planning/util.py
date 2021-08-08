@@ -215,6 +215,8 @@ def save_trajectory(args, seed, actions, samples_per_replan, aux_info=None):
             info['split_info'] = [[s.samples[i][3] for i in range(len(s.samples))] for s in samples_per_replan]
             info['final_obs'] = [[s.samples[i][4] for i in range(len(s.samples))] for s in samples_per_replan]
             info['returns'] = [[s.samples[i][2] for i in range(len(s.samples))] for s in samples_per_replan]
+            info['encoded'] = [[s.func.split_latent_converter.encode([sample[3] for sample in s.samples], s.func.env._get_obs())] for s in samples_per_replan]
+            info['agent'] = [(s.nodes, s.func.split_latent_converter) for s in samples_per_replan]
         pickle.dump(info, wf)
 
 
