@@ -56,7 +56,7 @@ def mol_length(s):
 
 class MoleculeEnv:
     def __init__(self, name):
-        assert name in ['QED', 'MolLength', 'DRD2', 'SARS', 'Antibiotic', 'bace', 'bbbp', 'hiv', 'LogP']
+        assert name in ['QED', 'MolLength', 'DRD2', 'SARS', 'hiv']
         self.name = name
         if self.name == 'QED':
             self.func = qed
@@ -67,20 +67,9 @@ class MoleculeEnv:
         elif self.name == 'SARS':
             evaluator = Chemprop('../../SARS-single')
             self.func = evaluator.predict_single
-        elif self.name == 'Antibiotic':
-            evaluator = Chemprop('../../antibiotics-single')
-            self.func = evaluator.predict_single
-        elif self.name == 'bace':
-            evaluator = Chemprop('../../bace')
-            self.func = evaluator.predict_single
-        elif self.name == 'bbbp':
-            evaluator = Chemprop('../../bbbp')
-            self.func = evaluator.predict_single
         elif self.name == 'hiv':
             evaluator = Chemprop('../../hiv')
             self.func = evaluator.predict_single
-        elif self.name == 'LogP':
-            self.func = penalized_logp
 
         class FakeArgs:
             def __init__(self, name):
@@ -93,21 +82,9 @@ class MoleculeEnv:
                 elif name == 'SARS':
                     self.vocab = '../../hgraph2graph/vocab.txt'
                     self.model = '../../hgraph2graph/ckpt/SARS-chembl-pretrained/model.ckpt.5000'
-                elif name == 'Antibiotic':
-                    self.vocab = '../../hgraph2graph/vocab.txt'
-                    self.model = '../../hgraph2graph/ckpt/Antibiotic-chembl-pretrained/model.ckpt.5000'
-                elif name == 'bace':
-                    self.vocab = '../../hgraph2graph/vocab.txt'
-                    self.model = '../../hgraph2graph/ckpt/bace-chembl-pretrained/model.ckpt.60000'
-                elif name == 'bbbp':
-                    self.vocab = '../../hgraph2graph/vocab.txt'
-                    self.model = '../../hgraph2graph/ckpt/bbbp-chembl-pretrained/model.ckpt.5000'
                 elif name == 'hiv':
                     self.vocab = '../../hgraph2graph/vocab.txt'
                     self.model = '../../hgraph2graph/ckpt/hiv-chembl-pretrained/model.ckpt.5000'
-                elif name == 'LogP':
-                    self.vocab = '../../hgraph2graph/data/chembl/vocab.txt'
-                    self.model = '../../hgraph2graph/ckpt/chembl-pretrained/model.ckpt'
                 else:
                     raise NotImplementedError
 
