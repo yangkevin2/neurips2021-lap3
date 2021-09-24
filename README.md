@@ -7,17 +7,19 @@ MiniWorld and MiniGrid envs originally from https://github.com/maximecb/gym-mini
 
 # Setup
 
-Required packages in `requirements.txt`. Install the `lamcts-planning` package via `setup.py` and also install the `latent-plan` directory. 
+Required packages in `requirements.txt`. Additionally, install `pytorch` using `conda`; version 1.9.1 works fine. Install the `lamcts-planning` package via `setup.py` and also install the `latent-plan` directory. 
 
 ## MiniWorld and MiniGrid:
 
-Install the `gym-miniworld` and/or `gym-minigrid` directories, which have our modifications from the original envs. 
+Install the `gym-miniworld` and/or `gym-minigrid` (TODO) directories, which have our modifications from the original envs. 
 
 ## Molecule:
 
-Install the code for the latent space from https://github.com/wengong-jin/hgraph2graph/tree/e396dbaf43f9d4ac2ee2568a4d5f93ad9e78b767. Note this code assumes the use of a GPU. Our code that interfaces with the pretrained latent space assumes that you put the `hgraph2graph` code in the same top-level directory as the top-level `plalam` repository. Additionally, download our pretrained latent space ckpts by running `wget https://plalam-molecule-ckpts.s3.amazonaws.com/latent-molecule-ckpts.zip` and unzip the contents, putting them inside a `ckpt` folder inside the `hgraph2graph` repository (see the paths under `FakeArgs` in `lamcts_planning/util.py`). 
+Install the code for the latent space from https://github.com/wengong-jin/hgraph2graph/tree/e396dbaf43f9d4ac2ee2568a4d5f93ad9e78b767. Note this code assumes the use of a GPU. Our code that interfaces with the pretrained latent space assumes that you put the `hgraph2graph` code in the same top-level directory as the top-level `plalam` repository. Additionally, download our pretrained latent space ckpts by running `wget https://plalam-molecule-ckpts.s3.amazonaws.com/latent-molecule-ckpts.zip` and unzip the contents, putting them inside a `ckpt` folder inside the `hgraph2graph` repository (see the paths under `FakeArgs` in `lamcts_planning/util.py`). Finally, put `vocab.txt` inside the `hgraph2graph` repository at the top level. 
 
 To setup the property evaluators, follow the instructions to install Chemprop at https://chemprop.readthedocs.io/en/latest/installation.html (in particular, make sure to get RDKit), and make sure to install version 1.2.0. Additionally, install `scikit-learn==0.21.3`. Then unzip the `molecule-ckpts.zip` file. There is no ckpt needed for QED since that's just a computationally defined property. `clf_py36.pkl` is the DRD2 property and should be placed in `lamcts_planning`. The other two folders are Chemprop ckpts for HIV and SARS, and the code currently assumes they exist in the same directory as the top-level `plalam` repository. 
+
+NOTE: if you see `Warning: molecule dependencies not installed; install if running molecule exps` it means your setup is failing somewhere; see the imports at the top of `lamcts_planning/util.py`. 
 
 # Example Commands: 
 

@@ -1,7 +1,10 @@
+absl-py==0.12.0
 alabaster==0.7.12
+astunparse==1.6.3
 Babel==2.9.1
+# box2d-py==2.3.8
+cachetools==4.2.1
 certifi==2020.12.5
-cffi==1.14.5
 chardet==4.0.0
 chemprop==1.2.0
 click==7.1.2
@@ -9,48 +12,69 @@ cloudpickle==1.6.0
 cma==3.0.3
 cycler==0.10.0
 Cython==0.29.22
-decorator==4.4.2
-descriptastorus @ git+https://github.com/bp-kelley/descriptastorus@4ffc9b888a78a9d01596987daebfae5653f1df7c
+decorator==5.0.7
+# descriptastorus @ git+https://github.com/bp-kelley/descriptastorus@4ffc9b888a78a9d01596987daebfae5653f1df7c
 docutils==0.16
+dotmap==1.3.23
 fasteners==0.16
 Flask==1.1.2
+flatbuffers==1.12
 future==0.18.2
-glfw==2.1.0
+gast==0.3.3
+google-auth==1.29.0
+google-auth-oauthlib==0.4.4
+google-pasta==0.2.0
 gpytorch==1.4.0
+grpcio==1.32.0
 gym==0.18.0
+# -e git+git@github.com:yangkevin2/gym-miniworld-mod.git@82071e064d2810713d9872372fc6c67e4683f0b2#egg=gym_miniworld
+h5py==2.10.0
+# -e git+https://github.com/wengong-jin/hgraph2graph.git@e396dbaf43f9d4ac2ee2568a4d5f93ad9e78b767#egg=hgraph2graph
 hyperopt==0.2.5
 idna==2.10
 imageio==2.9.0
 imagesize==1.2.0
+importlib-metadata==4.0.1
 itsdangerous==1.1.0
 Jinja2==2.11.3
 joblib==1.0.1
+Keras-Preprocessing==1.1.2
 kiwisolver==1.3.1
+# -e git+git@github.com:yangkevin2/plalam.git@25626de5c621354c8fef115c5ee8952a72e209e3#egg=lamcts_planning
+# -e git+git@github.com:yangkevin2/latent-plan.git@fc2f75da4300f55a9decdf0894932c141ac409af#egg=latent_plan&subdirectory=../../latent-plan
+lockfile==0.12.2
+# -e git+git@github.com:yangkevin2/latent-plan.git@fc2f75da4300f55a9decdf0894932c141ac409af#egg=maf&subdirectory=../../latent-plan/latent_plan/maf
+Markdown==3.3.4
 MarkupSafe==1.1.1
 matplotlib==3.3.4
-mkl-fft==1.3.0
-mkl-random==1.1.1
-mkl-service==2.3.0
-mujoco-py==2.0.2.13
+# mkl-fft==1.3.0
+# mkl-random==1.1.1
+# mkl-service==2.3.0
+# mujoco-py==2.0.2.13
 mypy-extensions==0.4.3
-networkx==2.5.1
-numpy==1.20.1
+networkx==2.2
+# numpy==1.20.1
+oauthlib==3.1.0
 olefile==0.46
+opt-einsum==3.3.0
 packaging==20.9
 pandas==1.2.4
 pandas-flavor==0.2.0
-Pillow @ file:///tmp/build/80754af9/pillow_1615057347459/work
-protobuf==3.16.0
+# Pillow @ file:///tmp/build/80754af9/pillow_1614711421884/work
+protobuf==3.15.8
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
 pycparser==2.20
-pyglet==1.5.11
 Pygments==2.9.0
 pyparsing==2.4.7
-python-dateutil @ file:///home/ktietz/src/ci/python-dateutil_1611928101742/work
-pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
+# python-dateutil @ file:///home/ktietz/src/ci/python-dateutil_1611928101742/work
+# pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
 requests==2.25.1
+requests-oauthlib==1.3.0
+rsa==4.7.2
 scikit-learn==0.24.2
 scipy==1.6.1
-six @ file:///tmp/build/80754af9/six_1605205313296/work
+# six @ file:///tmp/build/80754af9/six_1605205313296/work
 snowballstemmer==2.1.0
 Sphinx==3.5.4
 sphinxcontrib-applehelp==1.0.2
@@ -59,15 +83,23 @@ sphinxcontrib-htmlhelp==1.0.3
 sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
+tensorboard==2.5.0
+tensorboard-data-server==0.6.0
+tensorboard-plugin-wit==1.8.0
 tensorboardX==2.2
+tensorflow==2.4.1
+tensorflow-estimator==2.4.0
+termcolor==1.1.0
 threadpoolctl==2.1.0
-torch==1.8.0
-torchaudio==0.8.0a0+a751e1d
-torchvision==0.9.0
-tqdm==4.59.0
+# torch==1.8.0
+# torchaudio==0.8.0
+# torchvision==0.9.0
+tqdm==4.58.0
 typed-argument-parser==1.6.2
-typing-extensions @ file:///home/ktietz/src/ci_mi/typing_extensions_1612808209620/work
+# typing-extensions @ file:///home/ktietz/src/ci_mi/typing_extensions_1612808209620/work
 typing-inspect==0.6.0
-urllib3==1.26.4
+urllib3==1.26.3
 Werkzeug==1.0.1
+wrapt==1.12.1
 xarray==0.18.0
+zipp==3.4.1
