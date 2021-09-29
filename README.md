@@ -11,7 +11,7 @@ Required packages in `requirements.txt`. Additionally, install `pytorch` using `
 
 ## MiniWorld and MiniGrid:
 
-Install the `gym-miniworld` and/or `gym-minigrid` (TODO) directories, which have our modifications from the original envs. Emphasis: install the one included in this folder, not the official version. 
+Install the `gym-miniworld` and/or `gym-minigrid` (TODO) directories, which have our modifications from the original envs. Emphasis: install the one included in this folder, not the official version. Otherwise you will see crashes. 
 
 ## Molecule:
 
