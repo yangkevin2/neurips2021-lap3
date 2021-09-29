@@ -35,4 +35,4 @@ Molecule example:
 python -u -W ignore main.py --env QED --num_threads 1 --num_trials 1 --method lamcts-planning --Cp 0.5 --horizon 1 --replan_freq 1 --iterations 1000  --final_obs_split --action_seq_split --init_sigma_mult 1
 ```
 
-Note the "horizon" is 1 here is just a code hack - we operate in a latent space which encodes the full action sequence. 
+Note the "horizon" is 1 here is just a code hack - we operate in a latent space which encodes the full action sequence. You might see a few `failed to decode` warnings, which is fine; the graph decoder we use fails on a small fraction of inputs. Just as long as it's not failing on all the inputs. 
