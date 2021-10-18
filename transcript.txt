@@ -1,0 +1,326 @@
+(Sorry, the slide numbers got a bit misaligned as I added slides. Not an exact transcript for the video but roughly correct.)
+
+1:
+Hi everyone, I'm Kevin from UC Berkeley, and today I'll be presenting our work, Learning Space Partitions for Path Planning, which is joint work with a team of collaborators from UC Berkeley, FAIR, and Brown. 
+
+2:
+Ok, I'll start with a quick overview of the talk. 
+
+3:
+So first, I'll quickly define the task and also give some context and motivation for our method. 
+
+4: 
+Next, I'll describe our algorithm, Latent Space Partitions for Path Planning, 
+
+5:
+And then I'll provide a sketch of our theoretical analysis, which justifies a lot of design choices both in our method as well as some of the prior methods that we build on. 
+
+6:
+And then lastly I'll go over some of our experimental results, showing our method's strong empirical performance. 
+
+7:
+Ok, let's get started with the background on path planning. 
+
+8:
+Let's define path planning. 
+
+9:
+So the goal of path planning is to find a trajectory of states and actions in the search space omega of all possibilities, where the trajectory maximizes some desired reward function f as much as possible. 
+
+10:
+And of course this definition is very general, so path planning is useful in a wide range of domains, ranging from the obvious like navigation, 
+
+11:
+and robotics where you want to pick the best trajectory for your robot arm, 
+
+12:
+all the way to tasks like molecule design where the application isn't immediately obvious, but in this work as I’ll show later we do get some interesting results on molecular design tasks.
+
+13:
+Ok, now let me dive into an example to showcase some of the challenges in path planning which our work aims to address. 
+
+14:
+So here's a simple maze navigation environment, which I'll be using as a running example in this talk. You want to navigate from the start in orange to the goal in red within a limited number of steps. 
+
+15:
+So here's an example trajectory. The actual steps are a bit smaller in size, and the environment lasts for up to 216 steps. 
+Even though this task looks like a simple toy task, it's actually quite difficult. 
+
+16:
+First of all, the reward is sparse. We give a reward only at the end. It's based on the Euclidean distance to the goal, with a bonus for actually reaching the goal. Obviously if you do reward shaping and give intermediate rewards then this task would be trivial, but with rewards given only at the end it's quite hard. The main difficulty is that the problem is highly multimodal, since there are locally optimal trajectories that don't actually get to the goal. 
+
+17:
+Second, the actions are continuous, so at each step you pick an x-movement and a y-movement up to some maximum displacement. You have to plan the whole trajectory at once, so it's fully open loop planning, and in any case the states are raw images anyway. 
+
+18:
+And all this makes it fairly high dimensional as well. Since you have to plan a trajectory of up to 216 steps, and each step is 2-dimensional, it becomes a 432-dimensional navigation problem.
+
+16:
+Ok, let's start by examining what happens if we do random search, which means we just move randomly at each step. 
+
+17:
+From now on, I'm going to represent the final position of the trajectory as this little blue square, so that I can show a bunch of them together. 
+
+17:
+Here's what it looks like with random trajectories. Each square shows the final position of the trajectory after all 216 steps. 
+
+18:
+So unsurprisingly random search is kind of inefficient, and it's not learning anything over time. 
+
+19:
+If we instead look at CEM, a commonly used evolution-based optimization method, we see that it gets stuck in a local optimum of the reward. All of the blue squares representing the later trajectories are right up against the wall which is a local minimum for distance to the goal. 
+
+20:
+And this happens for a lot of other methods as well. It's pretty nontrivial to escape this local optimum. 
+
+21:
+But if you use our method, Latent Space Partitions for Path Planning, which we abbreviate to LAP3, it does explore enough to eventually find trajectories which reach the goal, even if not every trajectory is successful due to some ongoing exploration.
+
+22:
+And this is a key selling point of our method, being better at exploring and eventually finding a better solution in these kinds of difficult multimodal problems. 
+
+23:
+Ok, with that out of the way, let's dive right into our method, latent space partitions for path planning. 
+
+24:
+Let me first sketch the algorithm at a high level. 
+
+25:
+So our method LaP3 is a meta-algorithm for black-box optimization which builds on top of an existing solver to improve its performance. Fundamentally it repeats the following 3 main steps. 
+
+26:
+First, partitioning the search space into tree of regions,
+
+27:
+Second, selecting a region of the search space from the partition, 
+
+28:
+and third, sampling from that region. 
+
+29:
+Let's start with the partitioning step. 
+
+30:
+So we're going to build a partition /tree/. How are we going to do this?
+
+31:
+Suppose we have a bunch of samples and their values already. So in this diagram, each dot represents an entire /trajectory/ that we previously sampled, and suppose we color them according to their function value. For example, at the beginning of optimization, we can just randomly sample a few trajectories and get their function values to use as initialization.  
+
+32:
+Next, we're going to partition this region into two parts based on the function value of the data points. For example, you can use an SVM. And actually it's important that these regions are learned based on function value, rather than just randomly partitioned as in some prior works, and we'll show this in the theory later. But anyway, now you have two regions omega1 and omega2, where omega1 has generally higher function values than omega2. Now, we can actually start building up a tree hierarchy of regions. 
+
+33:
+So if we go back to before the partitioning, the root of the tree of regions is the full search space omega, 
+
+34:
+and then after our partitioning we have a left branch for omega1 and a right branch for omega2. 
+
+35:
+And we can keep recursively partitioning the regions to keep building out this tree. So here we partitioned omega1 into two more regions based on high and low function value. And in practice we recursively partition regions until each region contains fewer than some number of data points. 
+
+36:
+Ok so this is all well and good, and we're largely following previous work up until this point. But, of course, you can do better. 
+
+37:
+To see how, let's go back to our maze example for a moment. Remember that we were optimizing over 216 steps, and since each action was 2-dimensional, that's 432 dimensions. 
+
+38:
+Actually, the trajectory can be viewed as both the actions together with the states. 
+
+39:
+So what if instead of partitioning based on the action sequence, we partition based on the states?
+
+40:
+And this makes a lot of sense intuitively. For example, if I tell you that I moved down and to the left on the 100th step of the trajectory, that's not very useful information in and of itself, but if I instead show you the state, or the image of my position after 100 steps, then that can give you a pretty good sense of how i'm doing on this maze. 
+
+41:
+Unfortunately, the wrinkle is that the state might even be way higher dimensional than the action. 
+
+42:
+So what you want to do is convert the state to a much lower-dimensional latent representation, which is exactly what we do here. In this environment the latent encoder is just a randomly initialized convolutional neural network, which turns out to be a pretty decent feature extractor even though it's not trained at all. And naturally other tasks with different structures for the state will use a different latent encoder. 
+
+43:
+One important point that I want to highlight here is that since we're just partitioning, it turns out that we end up not needing a /de/coder. This lets you really push the dimension reduction as needed, since you don't have to worry about reconstruction. 
+
+44:
+Ok, so that's the general idea of this latent partitioning, and in practice we observe that it really makes a substantial difference. I haven't finished describing the rest of the method yet, but if you look at the success rate for solving randomly initialized mazes, our full method solves 57% of them, but if we don't do latent partitioning then we only solve 27%. And we see large differences across other tasks and domains as well. 
+
+45:
+Ok, so that's the partitioning step. Next, let's talk about selecting a region to sample from. 
+
+46:
+So remember our diagram before, with the partition tree over regions. Let's focus on just the tree now. 
+
+47:
+Ok. So our goal now is to select a leaf of this tree, representing a region that we want to sample from next. 
+
+48:
+To do this, we're going to do Monte Carlo Tree Search, or MCTS. Since we partitioned the regions based on high and low function value, there's a natural tradeoff between exploration and exploitation, where we want to sample more in the regions with high function values, but we still want to allocate some samples to the ones with low function values in case we missed something good. 
+
+49:
+In MCTS, this tradeoff between exploration and exploitation is controlled by this so-called upper confidence bound, or UCB. At each node of the tree we pick the branch with higher UCB value. 
+
+50:
+So the UCB score combines one term which assigns higher score to less-visited nodes, to encourage exploration, 
+
+51:
+with a second term based on the function value of the data points in the node, to encourage exploitation. 
+
+52:
+There's an important detail here in how to define the higher function value. One obvious choice is to define the metric based on the mean function value of data points within a node, and in fact this is what a lot of prior works do. 
+But our theoretical analysis suggests that you should actually use
+
+53:
+the max function value, at least in scenarios where the function f is deterministic. 
+
+54:
+And the theory translates directly into practice. If you use the mean function value for node selection in the MCTS, that's the bar in grey, which really quite significantly underperforms our method which is using the choice that comes from theory. 
+
+55:
+Ok, and the last part of our algorithm is how you actually do the sampling once you've picked the sub-region you want to sample from. 
+
+56:
+So returning to this partition tree, 
+
+57:
+Suppose we ran MCTS and selected omega3 as the leaf region we want to sample from,
+
+58:
+so now we want to sample from this boxed region omega3. 
+
+59:
+Now that we've reached this point, it's basically not our problem anymore. LaP3 is a meta-algorithm, so we just pick any existing solver from prior work and initialize it with the existing data points from that region omega3, and let it propose new samples from there. In practice, we primarily use a standard evolutionary algorithm called CMA-ES. 
+
+60:
+And you can see that our method using CMA-ES as a base solver is dramatically better than CMA-ES by itself on this maze task, and this trend holds up across a wide variety of different tasks and domains, as I'll show at the end of the talk when I discuss experiments.
+
+61:
+Ok, so that wraps up the general method description. I've alluded several times to our algorithm design choices lining up with the theory, so now let me actually sketch our theory to show how that's the case. 
+
+62:
+Alright, so let's talk about our setup and assumptions. 
+
+63:
+We assume
+
+64:
+That the function f is deterministic and bounded,
+
+65:
+and we're operating with a fixed number of regions which partition the full search space. So you can think of this as just considering the leaves of the partition tree and not the tree itself. 
+
+66:
+And finally, we assume that after selecting a region, we sample uniformly in the region, so just using random search instead of using some local optimization method like CMA-ES. 
+
+67:
+The goal of our analysis is to minimize the regret, defined as the sum of the differences at each timestep between the optimal function value and the value that we actually attained, 
+
+68:
+So intuitively this is the total suboptimality over time. You can trivially get regret which is linear in T since the function f is bounded, but our goal will be to get regret which is sublinear in T. 
+
+69:
+So with that setup, I'm going to skip over the lemmas and definitions that makes things precise, and just give a general sketch of our main result, which is basically a bound on the regret when using a simplified version of our algorithm. 
+
+70:
+The first condition is that the values in each region are in some sense sufficiently concentrated near the maximum value in the region. You can check our paper for the precise definition.
+
+71:
+The second assumption is that at every step, we select the region with the highest UCB value, where the UCB value is based on having high max function value. 
+
+72:
+Under these conditions, the total regret is sublinear, even if only barely depending on how you look at it. Specifically, it scales roughly according to T raised to the 1 - 1/d power, where d is the dimension of the problem, with some hidden log terms. In any case I'll show more empirical results later, so for now let's examine this theorem more closely. 
+
+73:
+First, this condition highlighted in red
+
+74:
+provides some support for our choice of using the maximum function value in a node for the UCB value in the MCTS. Even though it doesn't necessarily rule out other choices, in practice we do see that it makes a big difference, as I showed previously. 
+
+75:
+Next, if you examine the specifics of this scaling, 
+You see that the exponent will be smaller for smaller d,
+
+76:
+suggesting that using a lower-dimensional latent space can be more efficient. Even though for large d the exponent will still be pretty close to 1, as I showed before, in practice it's quite a big difference.
+
+77:
+Finally, let's look at this sufficiently concentrated condition, where we want the values in each region to be close to the maximum in the region. 
+
+78:
+How do we ensure that this condition holds?
+
+79:
+Well, that's exactly the point of /learning/ the partitions based on high and low function value, rather than partitioning randomly, as some previous works do. And actually, although I swept it under the big-O notation here, the bound itself is also tighter when the regions' values are more concentrated, as we describe in the paper. 
+
+80:
+Ok, and one more point about this sufficiently concentrated condition. 
+
+81:
+There's actually an annoying wrinkle in this result, which is that the requirement for sufficiently concentrated actually scales with T. That means that for any fixed set of regions, the conditions will eventually fail to hold as T gets sufficiently large. 
+
+82:
+The fix to this is to not keep the regions fixed. That is, you want to keep recursively partitioning the regions more over time as you accumulate more and more data points, and this is exactly what we do in practice, where we rebuild the partition tree every several timesteps. 
+
+83:
+Ok, so that's the theoretical justification for a lot of our design choices, so finally let me finish by showing some of the empirical justification as well.
+
+84:
+First, some 2D navigation tasks. 
+
+85:
+First, there's this maze task that I've been using as a running example. Our method LaP3 is the dark blue curve on top. This graph shows the fraction of environments solved on the y-axis, against the total sample budget on the x-axis. You can see that our method in dark blue is doing substantially better than any of the several baselines we tried. 
+
+86:
+Next is this four rooms task, where you have four rooms in a square and you have to navigate to a goal in the diagonally opposite room. And again ours is performing the best. 
+
+87:
+And finally here's another task where there's two goals, and the farther goal has higher reward, so the success rate is defined based on reaching the farther goal. The baselines flip flop back and forth between the tasks, but our method LaP3 is consistently doing the best. 
+
+88:
+And actually, on these tasks, LaP3 still works pretty well even if you use a learned model of the environment dynamics. So here we're following this previous work called PETS.
+
+89:
+And here if you directly replace their path planner with ours, you can see that the performance in blue improves over their original version in green,
+
+90:
+and similarly on the other task, even though it's a bit noisy. 
+
+91:
+Ok. Now I'm going to show experiments on a more practical task, molecular design, where the goal is to generate molecules with a high property score for some desired property. This task has huge practical applications in pharmaceutical drug discovery. 
+Now, molecular design isn't obviously a path planning problem at first glance, you can consider generating the molecule atom by atom, so the sequence of atoms you generate is like a path. 
+Ok. So altogether we optimize 4 properties in total. 
+
+92:
+The first one is a bit of a toy task. So this is QED, some synthetic measure of quote unquote looking like a pharmaceutical drug. Our method is at least as good as the baselines, but the absolute difference is pretty small. 
+
+93:
+But once you get into more challenging tasks based on real biological targets, like this dopamine receptor task, our method LaP3 really starts pulling away from the baselines. 
+
+94:
+And similarly for this HIV inhibition task
+
+95:
+and for SARS inhibition. Ok. So LaP3 again consistently outperformed the baselines on this highly practical real-world molecular design task across multiple different properties. 
+
+96:
+And you can find additional experiments on some other tasks and domains in the paper, including some more 2D navigation tasks and also a real-world compiler optimization task. 
+
+97:
+So that just about wraps things up. 
+
+98:
+The takeaways are that LaP3 is a meta algorithm for blackbox path planning, 
+
+99:
+which repeatedly constructs a partition tree of regions, selects a leaf according to MCTS, and then uses the base solver to sample from the selected region. 
+
+100:
+Our design choices are justified by our theoretical analysis, 
+
+101:
+as well as empirically where we outperform a wide variety of baselines across a variety of different tasks and domains. 
+
+102:
+So thanks for watching! Our code is publicly available, and you can see our paper for the full details. 
+
+
