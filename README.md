@@ -1,6 +1,6 @@
 # Learning Space Partitions for Path Planning
 
-Code for Learning Space Partitions for Path Planning (http://arxiv.org/abs/2106.10544) by Kevin Yang, Tianjun Zhang, Chris Cummins, Brandon Cui, Benoit Steiner, Linnan Wang, Joseph E. Gonzalez, Dan Klein, and Yuandong Tian. 
+Code for Learning Space Partitions for Path Planning (http://arxiv.org/abs/2106.10544) by Kevin Yang, Tianjun Zhang, Chris Cummins, Brandon Cui, Benoit Steiner, Linnan Wang, Joseph E. Gonzalez, Dan Klein, and Yuandong Tian. See slides and transcript for presentation in `neurips2021.pptx` and `transcript.txt` respectively.
 
 Base LaMCTS code originally from https://github.com/facebookresearch/LaMCTS . 
 MiniWorld and MiniGrid envs originally from https://github.com/maximecb/gym-miniworld and https://github.com/maximecb/gym-minigrid respectively.
