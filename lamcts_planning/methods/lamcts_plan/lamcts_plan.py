@@ -25,6 +25,7 @@ class LaMCTS_Func:
         assert (not need_decode and len(x) == self.dims) or (self.sample_latent_converter is not None and need_decode and len(x) == self.sample_latent_converter.latent_dim)
         self.counter += 1
         if need_decode and self.sample_latent_converter is not None:
+            # x = self.sample_latent_converter.decode(x, self.env.get_obs())
             x = self.sample_latent_converter.decode(x, self.env._get_obs())
         action_seq = x.reshape(self.horizon, self.env_info['action_dims'])
         returns, split_info, final_obs = rollout(self.env, self.env_info, action_seq, self.gamma, return_final_obs=True, action_seq_split=self.action_seq_split)

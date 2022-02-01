@@ -12,6 +12,7 @@ def parameterized_rollout(env, env_info, parameters, horizon, gamma=1, latent_co
     parameters = parameters.reshape((env_info['action_dims'], -1))
     simul_env, save_state = env_info['simulate_fn'](env)
     obs = simul_env._get_obs()
+    # obs = simul_env.get_obs()
     latent_converter.model.start_obs = obs
     obs = latent_converter.encode(obs) if latent_converter is not None else obs
     score = 0
@@ -20,6 +21,7 @@ def parameterized_rollout(env, env_info, parameters, horizon, gamma=1, latent_co
         action = np.dot(parameters, obs.ravel())
         _, r, done, _ = simul_env.step(action)
         obs = simul_env._get_obs()
+        # obs = simul_env.get_obs()
         obs = latent_converter.encode(obs) if latent_converter is not None else obs
         all_actions.append(action)
         score += r * gamma**i

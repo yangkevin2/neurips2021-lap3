@@ -7,9 +7,13 @@ import torch.nn as nn
 from lamcts_planning.util import num_params
 
 class CNNModel(nn.Module):
-    def __init__(self, is_2d):
+    def __init__(self, is_2d, is_minigrid_env, obs_size, pool_dim, pool_len):
         super(CNNModel, self).__init__()
         self.is_2d = is_2d
+        self.is_minigrid_env = is_minigrid_env
+        self.obs_size = obs_size
+        self.pool_dim = pool_dim
+        self.pool_len = pool_len
         self.reset()
     
     def reset(self):
@@ -22,13 +26,24 @@ class CNNModel(nn.Module):
             self.cnn3 = nn.Conv2d(channels, channels, kernel_size=(3, 3), padding=1)
             self.pool3 = nn.MaxPool2d(kernel_size=(3, 3), stride=(2, 2), padding=1)
         else:
-            self.cnn1 = nn.Conv3d(3, channels, kernel_size=(3, 3, 3), padding=1)
-            self.pool1 = nn.MaxPool3d(kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=1) # avg or max?
-            self.cnn2 = nn.Conv3d(channels, channels, kernel_size=(3, 3, 3), padding=1)
-            self.pool2 = nn.MaxPool3d(kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=1)
-            self.cnn3 = nn.Conv3d(channels, channels, kernel_size=(3, 3, 3), padding=1)
-            self.pool3 = nn.MaxPool3d(kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=1)
-        self.latent_dim = channels * 8 * 10 if self.is_2d else channels * 8 * 10 * 2
+            if self.is_minigrid_env:
+                self.cnn1 = nn.Conv3d(3, channels, kernel_size=(3, 3, 3), padding=1)
+                self.pool1 = nn.AvgPool3d(kernel_size=(3, 3, 2), stride=(2, 2, 2), padding=(1, 1, 0)) # avg or max?
+                self.cnn2 = nn.Conv3d(channels, channels, kernel_size=(3, 3, 3), padding=1)
+                self.pool2 = nn.AvgPool3d(kernel_size=(3, 3, 2), stride=(1, 1, 2), padding=(1, 1, 0))
+                self.cnn3 = nn.Conv3d(channels, channels, kernel_size=(3, 3, 3), padding=1)
+                self.pool3 = nn.AvgPool3d(kernel_size=(3, 3, 2), stride=(1, 1, 2), padding=(1, 1, 0)) 
+            else:
+                self.cnn1 = nn.Conv3d(3, channels, kernel_size=(3, 3, 3), padding=1)
+                self.pool1 = nn.MaxPool3d(kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=1) # avg or max?
+                self.cnn2 = nn.Conv3d(channels, channels, kernel_size=(3, 3, 3), padding=1)
+                self.pool2 = nn.MaxPool3d(kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=1)
+                self.cnn3 = nn.Conv3d(channels, channels, kernel_size=(3, 3, 3), padding=1)
+                self.pool3 = nn.MaxPool3d(kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=1)
+        if self.is_minigrid_env:
+            self.latent_dim = channels * self.pool_dim * self.pool_dim * self.pool_len
+        else:
+            self.latent_dim = channels * 8 * 10 if self.is_2d else channels * 8 * 10 * 2
     
     def forward(self, x, return_value=False):
         if self.is_2d: # parameter version
@@ -52,11 +67,21 @@ class LatentConverterCNN:
     def __init__(self, args, env_info, device='cpu'):
         self.is_2d = args.method == 'lamcts-parameter' # use 2d instead of 3d
         self.device = device
+        if env_info['is_minigrid_env']: 
+          self.is_minigrid_env = True
+          self.obs_size = env_info['obs_size']
+          self.pool_dim = env_info['pool_dim']
+          self.pool_len = env_info['pool_len']
+        else:
+          self.is_minigrid_env = False
+          self.obs_size = 0
+          self.pool_dim = 0
+          self.pool_len = 0
         self.reset()
         self.latent_dim = self.model.latent_dim
 
     def reset(self): # unclear if we need this
-        self.model = CNNModel(self.is_2d)
+        self.model = CNNModel(self.is_2d, self.is_minigrid_env, self.obs_size, self.pool_dim, self.pool_len)
 
     def fit(self, inputs, returns, states, epochs=10):
         """
@@ -78,7 +103,10 @@ class LatentConverterCNN:
         if self.is_2d:
             inputs = inputs.view(-1, 60, 80, 3).permute(0, 3, 1, 2)
         else:
-            inputs = inputs.view(inputs.shape[0], -1, 60, 80, 3).permute(0, 4, 2, 3, 1) # hardcoded for now for miniworld dimensions
+            if self.is_minigrid_env:
+                inputs = inputs.view(inputs.shape[0], -1, self.obs_size, self.obs_size, 3).permute(0, 4, 2, 3, 1)
+            else:
+                inputs = inputs.view(inputs.shape[0], -1, 60, 80, 3).permute(0, 4, 2, 3, 1) # hardcoded for now for miniworld dimensions
         inputs = inputs.to(self.device)
         encoded = self.model(inputs)
         if shape_len == 1:

@@ -11,7 +11,7 @@ Required packages in `requirements.txt`. Additionally, install `pytorch` using `
 
 ## MiniWorld and MiniGrid:
 
-Install the `gym-miniworld` and/or `gym-minigrid` (TODO) directories, which have our modifications from the original envs. Emphasis: install the one included in this folder, not the official version. Otherwise you will see crashes. 
+Install the `gym-miniworld` and/or `gym-minigrid` directories, which have our modifications from the original envs. **Make sure to install the ones included in this folder, not the official versions.** Otherwise you will see crashes. 
 
 ## Molecule:
 
@@ -23,10 +23,16 @@ NOTE: if you see `Warning: molecule dependencies not installed; install if runni
 
 # Example Commands: 
 
-MiniWorld example: (see https://github.com/maximecb/gym-miniworld for discussion on why the xvfb-run stuff is needed when running on Linux without rendering; also follow their setup instructions for e.g. the OpenGL dependencies)
+MiniWorld example: (see https://github.com/maximecb/gym-miniworld for discussion on why the `xvfb-run` stuff is needed when running on Linux without rendering; also follow their setup instructions for e.g. the OpenGL dependencies)
 
 ```
 xvfb-run -a -s "-screen 0 1024x768x24 -ac +extension GLX +render -noreset" python -u main.py --env MiniWorld-MazeS3-v0 --num_threads 1 --num_trials 1 --method lamcts-planning --Cp 2 --horizon 216 --replan_freq 216 --iterations 2000 --final_obs_split --latent --latent_model cnn --latent_ckpt None --init_sigma_mult 8 
+```
+
+MiniGrid example: 
+
+```
+xvfb-run -a -s "-screen 0 1024x768x24 -ac +extension GLX +render -noreset" python -u main.py --env MiniGrid-DoorKey-6x6-v0 --num_threads 1 --num_trials 1 --method lamcts-planning --Cp 2 --horizon 180 --replan_freq 180 --iterations 2000 --final_obs_split --latent --latent_model cnn --latent_ckpt None
 ```
 
 Molecule example: 

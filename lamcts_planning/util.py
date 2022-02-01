@@ -142,13 +142,19 @@ def make_molecule_env(name):
 
 def rollout(env, env_info, action_seq, gamma=1, return_final_obs=False, action_seq_split=True):
     is_miniworld_env = 'MiniWorld' in str(env)
+    is_minigrid_env = env_info['is_minigrid_env']
     simul_env, save_state = env_info['simulate_fn'](env)
     score = 0
     all_obs = []
     for i, action in enumerate(action_seq):
+        if is_minigrid_env:
+            action = np.argmax(action)
         _, r, done, final_smiles = simul_env.step(action)
+        # obs = simul_env.get_obs()
         obs = simul_env._get_obs()
         if is_miniworld_env:
+            all_obs.append(obs.ravel())
+        if is_minigrid_env:
             all_obs.append(obs.ravel())
         score += r * gamma**i
         if done:
@@ -156,6 +162,8 @@ def rollout(env, env_info, action_seq, gamma=1, return_final_obs=False, action_s
     # print(env.agent.pos)
     if is_miniworld_env:
         final_pos = deepcopy(simul_env.agent.pos)
+    if is_minigrid_env:
+        final_pos = deepcopy(simul_env.agent_pos)
     env_info['restore_fn'](env, save_state)
     if action_seq_split: # for molecule latent, we turn this on. it's actually already in the latent and we decode out of the latent later. 
         return (score, action_seq.ravel(), final_smiles) if return_final_obs else score
@@ -165,6 +173,12 @@ def rollout(env, env_info, action_seq, gamma=1, return_final_obs=False, action_s
                 all_obs.append(np.zeros_like(all_obs[-1]))
             all_obs = [all_obs[i] for i in range(0, len(all_obs), 20)]
             return (score, np.concatenate(all_obs, axis=0), final_pos) if return_final_obs else score
+        elif is_minigrid_env:
+            while len(all_obs) < env_info['env_length']:
+                all_obs.append(np.zeros_like(all_obs[-1]))
+            all_obs = [all_obs[i] for i in range(0, len(all_obs), 10)]
+            return (score, np.concatenate(all_obs, axis=0), final_pos) if return_final_obs else score
+
         else:
             return (score, obs.ravel(), final_smiles) if return_final_obs else score
 

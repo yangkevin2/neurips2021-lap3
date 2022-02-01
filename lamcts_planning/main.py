@@ -23,6 +23,11 @@ def run_trial(args):
         # import pyglet
         # pyglet.options['headless'] = True
         import gym_miniworld
+    if 'MiniGrid' in args.env:
+        # import pyglet
+        # pyglet.options['headless'] = True
+        import gym_minigrid
+
     planning_method = PLANNING_METHODS[args.method]
     try:
         env = gym.make(args.env)
@@ -54,6 +59,8 @@ def run_trial(args):
             time_until_replan = args.replan_freq
         time_until_replan -= 1
         action = plan[0]
+        if env_info['is_minigrid_env']:
+            action = np.argmax(action)
         plan = plan[1:]
         _, r, done, _ = env.step(action)
         totalr += r

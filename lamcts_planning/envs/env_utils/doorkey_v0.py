@@ -1,0 +1,12 @@
+from copy import deepcopy
+import pickle
+
+import numpy as np
+
+def simulate(env):
+    saved_keys = env._seed
+    return env, saved_keys
+
+def restore(env, saved_keys):
+    env.seed(saved_keys)
+    env.reset()

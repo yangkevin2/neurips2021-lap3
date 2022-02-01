@@ -146,6 +146,7 @@ class MCTS:
             self.best_value_trace.append( (value, self.sample_counter) )
         self.sample_counter += 1
         self.samples.append( (sample, value, self.func.env._get_obs(), split_info, final_obs ))
+        # self.samples.append( (sample, value, self.func.env.get_obs(), split_info, final_obs ))
         return value
         
     def init_train(self):
@@ -311,8 +312,10 @@ class MCTS:
                     if self.args.latent_samples and self.args.sample_latent_model is not None:
                         self.func.sample_latent_converter.fit([s[0] for s in self.samples], [s[1] for s in self.samples], [s[2] for s in self.samples])
                     self.split_vectors = self.func.split_latent_converter.encode([s[split_latent_index] for s in self.samples], self.func.env._get_obs())
+                    # self.split_vectors = self.func.split_latent_converter.encode([s[split_latent_index] for s in self.samples], self.func.env.get_obs())
                     if self.args.latent_samples:
                         self.latent_samples = self.func.sample_latent_converter.encode([s[0] for s in self.samples], self.func.env._get_obs())
+                        # self.latent_samples = self.func.sample_latent_converter.encode([s[0] for s in self.samples], self.func.env.get_obs())
                     else:
                         self.latent_samples = [s[0] for s in self.samples]
                 else:
@@ -334,6 +337,7 @@ class MCTS:
                     raise Exception("solver not implemented")
                 if self.func.sample_latent_converter is not None and self.args.latent_samples:
                     samples = self.func.sample_latent_converter.decode(latent_samples, self.func.env._get_obs())
+                    # samples = self.func.sample_latent_converter.decode(latent_samples, self.func.env.get_obs())
                 else:
                     samples = latent_samples
                 for idx in range(0, len(samples)):

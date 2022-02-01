@@ -566,6 +566,7 @@ class Classifier():
             indices = sorted(indices, key=lambda i: tell_fX[i], reverse=True)
             x0 = [tell_X[indices[i]] for i in range(num_samples)]
         proposed_X = func.latent_converter.improve_samples(x0, func.env._get_obs(), step=step)
+        # proposed_X = func.latent_converter.improve_samples(x0, func.env.get_obs(), step=step)
         new_fX = [func(x) for x in proposed_X]
         return proposed_X, [-fx for fx in new_fX]
 
